@@ -30,15 +30,15 @@ jobs:
         run: |
           npm install
           node -e "const packageJson = require('./package.json'); packageJson.version = String(Number(packageJson.version) + 1); require('fs').writeFileSync('./package.json', JSON.stringify(packageJson, null, 2));"
+          echo "NEW_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Commit changes to package.json
         run: |
           git add package.json
-          git commit --amend --no-edit
+          git commit -m "Bump version to $NEW_VERSION"
 
       - name: Push changes to GitHub
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-          force: true
